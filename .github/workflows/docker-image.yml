@@ -31,19 +31,22 @@ jobs:
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-        VERSION_CONTROL: ${{steps.version.outputs.version}}
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-        echo "new version: $VERSION_CONTROL"
 
-    # - name: Docker build image
-    #   run: |
-    #    docker build -t mceitz/docker-graphql:$VERSION_CONTROL .
-    #    docker build -t mceitz/docker-graphql:latest .
+    - name: Docker build image
+      env:
+        VERSION_CONTROL: ${{steps.version.outputs.version}}
+      run: |
+       docker build -t mceitz/docker-graphql:$VERSION_CONTROL .
+       docker build -t mceitz/docker-graphql:latest .
 
-    # - name: Docker push image
-    #   run: |
-    #     docker push mceitz/docker-graphql:$VERSION_CONTROL
-    #     docker push mceitz/docker-graphql:latest
-    # - name: Build the Docker image
-    #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Docker push image
+      env:
+        VERSION_CONTROL: ${{steps.version.outputs.version}}
+        
+      run: |
+        docker push mceitz/docker-graphql:$VERSION_CONTROL
+        docker push mceitz/docker-graphql:latest
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
